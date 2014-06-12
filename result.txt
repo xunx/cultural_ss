@@ -1,0 +1,132 @@
+ PARAMETER VALUES
+ 
+   Convergence tolerance for capital stock:  1.0000000E-03
+   Convergence tolerance for bequests:  1.0000000E-03
+   Convergence gradient for capital stock:  0.2000000    
+   Convergence gradient for bequests:  0.6000000    
+   Maximum number of iterations for convergence:          50
+ 
+   Labor exponent in production function:  0.6900000    
+   Capital exponent in production function:  0.2770000    
+   Multiplicative constant in production function:   1.005000    
+   Growth rate of per capita output:  1.6500000E-02
+   Depreciation rate:  6.8999998E-02
+ 
+   Subjective discount factor:  0.9780000    
+   Risk aversion parameter:   2.000000    
+ 
+   Social security replacement ratio:  0.4000000    
+   Unemployment insurance replacement rate:  0.3000000    
+ 
+   Maximum age allowed:          65
+   Retirement age:          45
+   Exogenous hours of work:   1.000000    
+   Population growth rate:  1.2000000E-02
+ 
+   Maximum permissible asset:   40.00000    
+   Number of points on asset grid:        4097
+ 
+ ITERATION RESULTS
+ 
+ Iteration           1
+ Initial capital =   2.300000    
+ Ending capital =  0.6638069    
+ Relative change in capital =  0.7113883    
+ Initial bequests =  4.1999999E-02
+ Ending bequest =  2.9004281E-02
+ Relative change in bequests =  0.3094219    
+ 
+ Iteration           2
+ Initial capital =   1.972761    
+ Ending capital =   1.574098    
+ Relative change in capital =  0.2020841    
+ Initial bequests =  3.4202568E-02
+ Ending bequest =  3.6437150E-02
+ Relative change in bequests =  6.5333746E-02
+ 
+ Iteration           3
+ Initial capital =   1.893029    
+ Ending capital =   1.799287    
+ Relative change in capital =  4.9519215E-02
+ Initial bequests =  3.5543315E-02
+ Ending bequest =  3.8864978E-02
+ Relative change in bequests =  9.3453929E-02
+ 
+ Iteration           4
+ Initial capital =   1.874280    
+ Ending capital =   1.856878    
+ Relative change in capital =  9.2851035E-03
+ Initial bequests =  3.7536312E-02
+ Ending bequest =  3.9504878E-02
+ Relative change in bequests =  5.2444320E-02
+ 
+ Iteration           5
+ Initial capital =   1.870800    
+ Ending capital =   1.866079    
+ Relative change in capital =  2.5234164E-03
+ Initial bequests =  3.8717452E-02
+ Ending bequest =  3.9611228E-02
+ Relative change in bequests =  2.3084560E-02
+ 
+ Iteration           6
+ Initial capital =   1.869856    
+ Ending capital =   1.868825    
+ Relative change in capital =  5.5127393E-04
+ Initial bequests =  3.9253719E-02
+ Ending bequest =  3.9643854E-02
+ Relative change in bequests =  9.9387970E-03
+ 
+ Iteration           7
+ Initial capital =   1.869650    
+ Ending capital =   1.868828    
+ Relative change in capital =  4.3956301E-04
+ Initial bequests =  3.9487801E-02
+ Ending bequest =  3.9642513E-02
+ Relative change in bequests =  3.9179521E-03
+ 
+ Iteration           8
+ Initial capital =   1.869485    
+ Ending capital =   1.869815    
+ Relative change in capital =  1.7612123E-04
+ Initial bequests =  3.9580628E-02
+ Ending bequest =  3.9654370E-02
+ Relative change in bequests =  1.8630861E-03
+ 
+ Iteration           9
+ Initial capital =   1.869551    
+ Ending capital =   1.869405    
+ Relative change in capital =  7.8237921E-05
+ Initial bequests =  3.9624874E-02
+ Ending bequest =  3.9650079E-02
+ Relative change in bequests =  6.3609827E-04
+ 
+ FINAL RESULTS
+ 
+ Labor input =  0.7551745    
+ Unemployment insurance tax rate =  1.9148936E-02
+ 
+ Wage rate =  0.8996875    
+ Interest rate =  7.6892309E-02
+ 
+ Social security benefit =  0.5364895    
+ Social security tax rate =  5.7298362E-02
+ 
+ Output =  0.9846682    
+ Consumption =  0.8019825    
+ Investment =  0.1826513    
+ Excess demand = -3.4391880E-05
+ 
+ Land Price =  0.6935784    
+ Capital (from ending assets) =   1.869405    
+ Capital (from beginning assets) =   1.869381    
+ 
+ Capital-Output Ratio   1.898512    
+ Land-Output Ratio  0.7043778    
+ Wealth-Output Ratio   2.602890    
+ 
+ Bequests (received) =  3.9650079E-02
+ 
+ Expected lifetime utility (value function) =  -34.35602    
+ Average lifetime utility (invariant distribution) =  -34.35452    
+ 
+ 
