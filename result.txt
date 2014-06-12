@@ -7,7 +7,6 @@
    Maximum number of iterations for convergence:          50
  
    Labor exponent in production function:  0.6900000    
-   Capital exponent in production function:  0.2770000    
    Multiplicative constant in production function:   1.005000    
    Growth rate of per capita output:  1.6500000E-02
    Depreciation rate:  6.8999998E-02
@@ -30,103 +29,116 @@
  
  Iteration           1
  Initial capital =   2.300000    
- Ending capital =  0.6638069    
- Relative change in capital =  0.7113883    
+ Ending capital =   2.701450    
+ Relative change in capital =  0.1745434    
  Initial bequests =  4.1999999E-02
- Ending bequest =  2.9004281E-02
- Relative change in bequests =  0.3094219    
+ Ending bequest =  4.2065948E-02
+ Relative change in bequests =  1.5702099E-03
  
  Iteration           2
- Initial capital =   1.972761    
- Ending capital =   1.574098    
- Relative change in capital =  0.2020841    
- Initial bequests =  3.4202568E-02
- Ending bequest =  3.6437150E-02
- Relative change in bequests =  6.5333746E-02
+ Initial capital =   2.380290    
+ Ending capital =   2.577149    
+ Relative change in capital =  8.2703739E-02
+ Initial bequests =  4.2039569E-02
+ Ending bequest =  3.9989389E-02
+ Relative change in bequests =  4.8767865E-02
  
  Iteration           3
- Initial capital =   1.893029    
- Ending capital =   1.799287    
- Relative change in capital =  4.9519215E-02
- Initial bequests =  3.5543315E-02
- Ending bequest =  3.8864978E-02
- Relative change in bequests =  9.3453929E-02
+ Initial capital =   2.419662    
+ Ending capital =   2.522966    
+ Relative change in capital =  4.2693730E-02
+ Initial bequests =  4.0809460E-02
+ Ending bequest =  3.9082121E-02
+ Relative change in bequests =  4.2326923E-02
  
  Iteration           4
- Initial capital =   1.874280    
- Ending capital =   1.856878    
- Relative change in capital =  9.2851035E-03
- Initial bequests =  3.7536312E-02
- Ending bequest =  3.9504878E-02
- Relative change in bequests =  5.2444320E-02
+ Initial capital =   2.440323    
+ Ending capital =   2.495677    
+ Relative change in capital =  2.2683408E-02
+ Initial bequests =  3.9773054E-02
+ Ending bequest =  3.8647637E-02
+ Relative change in bequests =  2.8295983E-02
  
  Iteration           5
- Initial capital =   1.870800    
- Ending capital =   1.866079    
- Relative change in capital =  2.5234164E-03
- Initial bequests =  3.8717452E-02
- Ending bequest =  3.9611228E-02
- Relative change in bequests =  2.3084560E-02
+ Initial capital =   2.451394    
+ Ending capital =   2.482568    
+ Relative change in capital =  1.2716825E-02
+ Initial bequests =  3.9097805E-02
+ Ending bequest =  3.8425628E-02
+ Relative change in bequests =  1.7192179E-02
  
  Iteration           6
- Initial capital =   1.869856    
- Ending capital =   1.868825    
- Relative change in capital =  5.5127393E-04
- Initial bequests =  3.9253719E-02
- Ending bequest =  3.9643854E-02
- Relative change in bequests =  9.9387970E-03
+ Initial capital =   2.457628    
+ Ending capital =   2.474269    
+ Relative change in capital =  6.7708306E-03
+ Initial bequests =  3.8694501E-02
+ Ending bequest =  3.8281750E-02
+ Relative change in bequests =  1.0666916E-02
  
  Iteration           7
- Initial capital =   1.869650    
- Ending capital =   1.868828    
- Relative change in capital =  4.3956301E-04
- Initial bequests =  3.9487801E-02
- Ending bequest =  3.9642513E-02
- Relative change in bequests =  3.9179521E-03
+ Initial capital =   2.460957    
+ Ending capital =   2.469025    
+ Relative change in capital =  3.2784345E-03
+ Initial bequests =  3.8446851E-02
+ Ending bequest =  3.8206704E-02
+ Relative change in bequests =  6.2462101E-03
  
  Iteration           8
- Initial capital =   1.869485    
- Ending capital =   1.869815    
- Relative change in capital =  1.7612123E-04
- Initial bequests =  3.9580628E-02
- Ending bequest =  3.9654370E-02
- Relative change in bequests =  1.8630861E-03
+ Initial capital =   2.462570    
+ Ending capital =   2.466103    
+ Relative change in capital =  1.4346339E-03
+ Initial bequests =  3.8302764E-02
+ Ending bequest =  3.8163636E-02
+ Relative change in bequests =  3.6323336E-03
  
  Iteration           9
- Initial capital =   1.869551    
- Ending capital =   1.869405    
- Relative change in capital =  7.8237921E-05
- Initial bequests =  3.9624874E-02
- Ending bequest =  3.9650079E-02
- Relative change in bequests =  6.3609827E-04
+ Initial capital =   2.463277    
+ Ending capital =   2.465108    
+ Relative change in capital =  7.4334099E-04
+ Initial bequests =  3.8219288E-02
+ Ending bequest =  3.8149070E-02
+ Relative change in bequests =  1.8372398E-03
+ 
+ Iteration          10
+ Initial capital =   2.463643    
+ Ending capital =   2.464235    
+ Relative change in capital =  2.4038862E-04
+ Initial bequests =  3.8177155E-02
+ Ending bequest =  3.8136229E-02
+ Relative change in bequests =  1.0720034E-03
+ 
+ Iteration          11
+ Initial capital =   2.463762    
+ Ending capital =   2.465091    
+ Relative change in capital =  5.3959037E-04
+ Initial bequests =  3.8152598E-02
+ Ending bequest =  3.8146969E-02
+ Relative change in bequests =  1.4753683E-04
  
  FINAL RESULTS
  
  Labor input =  0.7551745    
  Unemployment insurance tax rate =  1.9148936E-02
  
- Wage rate =  0.8996875    
- Interest rate =  7.6892309E-02
+ Wage rate =   1.000498    
+ Interest rate =  6.8777166E-02
  
- Social security benefit =  0.5364895    
+ Social security benefit =  0.5966032    
  Social security tax rate =  5.7298362E-02
  
- Output =  0.9846682    
- Consumption =  0.8019825    
- Investment =  0.1826513    
- Excess demand = -3.4391880E-05
+ Output =   1.095000    
+ Consumption =  0.8543552    
+ Investment =  0.2407045    
+ Excess demand =  5.9321523E-05
  
- Land Price =  0.6935784    
- Capital (from ending assets) =   1.869405    
- Capital (from beginning assets) =   1.869381    
+ Capital (from ending assets) =   2.465091    
+ Capital (from beginning assets) =   2.464004    
  
- Capital-Output Ratio   1.898512    
- Land-Output Ratio  0.7043778    
- Wealth-Output Ratio   2.602890    
+ Capital-Output Ratio   2.251224    
  
- Bequests (received) =  3.9650079E-02
+ Bequests (received) =  3.8146969E-02
  
- Expected lifetime utility (value function) =  -34.35602    
- Average lifetime utility (invariant distribution) =  -34.35452    
+ Expected lifetime utility (value function) =  -31.56277    
+ Average lifetime utility (invariant distribution) =  -31.56130    
  
  

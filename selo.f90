@@ -30,7 +30,6 @@ PARAMETER (GRADB = 0.6)        !  Convergence gradient for bequests
 PARAMETER (MAXITER = 50)       !  Maximum number of iterations for convergence
 
 PARAMETER (ALPHA  = 0.690)     !  Labor exponent in production function
-PARAMETER (PSI = 0.277)        !  Capital exponent in production function
 PARAMETER (TFP    = 1.005)     !  Multiplicative constant in production function
 PARAMETER (GROWTH = 0.0165)    !  Growth rate of per capita output
 PARAMETER (DEP    = 0.069)     !  Depreciation rate
@@ -66,7 +65,7 @@ PARAMETER (CINCR  = 0.001)     !  Consumption increment for utility tabulation
 INTEGER AGE, IL, IS, ISKIP, IU, JAMAX
 
 REAL  ATR, BEQ1, BEQEND, EXDEM, EXPCTDUT, INT, INV, K, K1
-REAL  KDEV, L, OUTPUT, PRICE, SS, STAX, VMAX, WAGE, WAGEZ, X3
+REAL  KDEV, L, OUTPUT, SS, STAX, VMAX, WAGE, WAGEZ, X3
 
 INTEGER IDCR(:,:)      !  Asset decision rules for retirees
 INTEGER IDCW(:,:,:)    !  Asset decision rules for working-age agents
@@ -102,10 +101,10 @@ ALLOCATABLE  IDCR, IDCW, ILONG, MU, S, UT, VR, VW, YR, YW
 !
 !*********************
 
-OPEN(UNIT=7,FILE='/home/sean/Desktop/Dropbox/selo95/comboeff.txt')
-OPEN(UNIT=8,FILE='/home/sean/Desktop/Dropbox/selo95/psurv.txt')
-OPEN(UNIT=10,FILE='/home/sean/Desktop/Dropbox/selo95/result.txt')
-OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
+OPEN(UNIT=7,FILE='/home/sean/Desktop/Dropbox/cultural_ss/comboeff.txt')
+OPEN(UNIT=8,FILE='/home/sean/Desktop/Dropbox/cultural_ss/psurv.txt')
+OPEN(UNIT=10,FILE='/home/sean/Desktop/Dropbox/cultural_ss/result.txt')
+OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !*********************
 !
@@ -239,7 +238,6 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
      WRITE(10,*)
 
      WRITE(10,*) '  Labor exponent in production function:', ALPHA
-     WRITE(10,*) '  Capital exponent in production function:', PSI
      WRITE(10,*) '  Multiplicative constant in production function:', TFP
      WRITE(10,*) '  Growth rate of per capita output:', GROWTH
      WRITE(10,*) '  Depreciation rate:', DEP
@@ -295,9 +293,9 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
 
 !   Factor prices
 
-     WAGE = ALPHA*TFP*(L**(ALPHA-1.0))*(K**PSI)
+     WAGE = ALPHA*TFP*(L**(ALPHA-1.0))*(K**(1.0-ALPHA))
 	 PRINT*, 'WAGE=', WAGE
-     INT = PSI*TFP*(L**ALPHA)*(K**(PSI-1.0)) - DEP
+     INT = (1.0-ALPHA)*TFP*(L**ALPHA)*(K**(-ALPHA)) - DEP
 	 PRINT*, 'INT=', INT
      IF (INT<AGROWTH) THEN
         PRINT *, "Interest rate is less than growth rate."
@@ -387,9 +385,8 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
         BEQEND = BEQEND + ACROSS(AGE)*MU(AGE)*(1.0-S(AGE+1))
      END DO
 
-     OUTPUT = TFP*(L**ALPHA)*(K**PSI)
-     PRICE = (1.0-ALPHA-PSI)*((1.0+AGROWTH)/(INT-AGROWTH))*OUTPUT
-     K1 = (AEND-PRICE)/(1.0+AGROWTH)
+     OUTPUT = TFP*(L**ALPHA)*(K**(1.0-ALPHA))
+     K1 = AEND/(1.0+AGROWTH)
      BEQ1 = BEQEND/(1.0+AGROWTH)
 
 !   BEQ is the bequest received per effective labor unit that enters the
@@ -507,9 +504,8 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
      WRITE(10,*) 'Excess demand =', EXDEM
      WRITE(10,*)
 
-     WRITE(10,*) 'Land Price =', PRICE
      WRITE(10,*) 'Capital (from ending assets) =', K1
-     WRITE(10,*) 'Capital (from beginning assets) =', ABEG+BEQ1-PRICE/(1.0+AGROWTH)
+     WRITE(10,*) 'Capital (from beginning assets) =', ABEG+BEQ1/(1.0+AGROWTH)
      WRITE(10,*)
 
 !   Because ABEG and BEQ1 have land valued at last period's price, the value
@@ -517,8 +513,6 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
 !      period's price.
 
      WRITE(10,*) 'Capital-Output Ratio', K1/OUTPUT
-     WRITE(10,*) 'Land-Output Ratio', PRICE/OUTPUT
-     WRITE(10,*) 'Wealth-Output Ratio', (K1+PRICE)/OUTPUT
      WRITE(10,*)
      WRITE(10,*) 'Bequests (received) =', BEQ1
      WRITE(10,*)
@@ -554,7 +548,7 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/selo95/profile.txt')
      K = K1                                       ! 1025-point grid
      BEQ = BEQ1                                   ! 1025-point grid
      WRITE(11,*) THETA, K1, BEQ1                   ! 1025-point grid
-     WRITE(12,*) THETA, OUTPUT, K1, PRICE, ACONS, INT, WAGE, EXPCTDUT
+     WRITE(12,*) THETA, OUTPUT, K1, ACONS, INT, WAGE, EXPCTDUT
      WRITE(10,*)
      WRITE(10,*)
 
