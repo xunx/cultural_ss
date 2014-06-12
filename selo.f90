@@ -55,6 +55,7 @@ PARAMETER (CMIN   = 0.00005)   !  Minimum permissible consumption
 !PARAMETER (CMAX   = 12.0)      !  Maximum permissible consumption
 ! below, we use JMAX = 1.5 * AMAX
 PARAMETER (CINCR  = 0.001)     !  Consumption increment for utility tabulation
+PARAMETER (JMAX = 60000)	! JMAX = 1.5 * AMAX / CINCR
 
 !********************
 !
@@ -67,33 +68,29 @@ INTEGER AGE, IL, IS, ISKIP, IU, JAMAX
 REAL  ATR, BEQ1, BEQEND, EXDEM, EXPCTDUT, INT, INV, K, K1
 REAL  KDEV, L, OUTPUT, SS, STAX, VMAX, WAGE, WAGEZ, X3
 
-INTEGER IDCR(:,:)      !  Asset decision rules for retirees
-INTEGER IDCW(:,:,:)    !  Asset decision rules for working-age agents
+INTEGER IDCR(RETAGE:MAXAGE,NGRID)      !  Asset decision rules for retirees
+INTEGER IDCW(RETAGE-1,NGRID,2)    !  Asset decision rules for working-age agents
 
-REAL A(:)              !  Asset levels
-REAL ACROSS(:)         !  Cross-sectional age-assets profile
-REAL ALONG(:)          !  Longitudinal age-assets profile
-REAL CCROSS(:)         !  Cross-sectional age-consumption profile
-REAL CLONG(:)          !  Longitudinal age-consumption profile
-REAL CUMS(:)           !  Unconditional survival probabilities, age 1 to age j
-REAL EFFCROSS(:)       !  Cross-sectional age-earnings profile
-REAL EFFLONG(:)        !  Longitudinal age-earnings profile for given cohort
-REAL ICROSS(:)         !  Cross-sectional age-income profile
-REAL ILONG(:)          !  Longitudinal age-income profile
-REAL MU(:)             !  Age distribution of population
+REAL A(NGRID)              !  Asset levels
+REAL ACROSS(MAXAGE)         !  Cross-sectional age-assets profile
+REAL ALONG(MAXAGE)          !  Longitudinal age-assets profile
+REAL CCROSS(MAXAGE)         !  Cross-sectional age-consumption profile
+REAL CLONG(MAXAGE)          !  Longitudinal age-consumption profile
+REAL CUMS(MAXAGE)           !  Unconditional survival probabilities, age 1 to age j
+REAL EFFCROSS(RETAGE-1)       !  Cross-sectional age-earnings profile
+REAL EFFLONG(RETAGE-1)        !  Longitudinal age-earnings profile for given cohort
+REAL ICROSS(MAXAGE)         !  Cross-sectional age-income profile
+REAL ILONG(MAXAGE)          !  Longitudinal age-income profile
+REAL MU(MAXAGE)             !  Age distribution of population
 REAL P(2,2)            !  Employment state transition probabilities
-REAL S(:)              !  Conditional survival probabilities, age j-1 to age j
-REAL UT(:)             !
-   !Values in utility function lookup table
-REAL VR(:,:)           !  Value function for retirees
-REAL VW(:,:,:)         !  Value function for working-age agents
-REAL YR(:,:)           !  Age-dependent distribution of retirees across asset
-                       !     states
-REAL YW(:,:,:)         !  Age-dependent distribution of working-age agents
-                       !     across asset and employment states
+REAL S(MAXAGE)              !  Conditional survival probabilities, age j-1 to age j
+REAL UT(JMAX)             !Values in utility function lookup table
+REAL VR(RETAGE:MAXAGE,NGRID)           !  Value function for retirees
+REAL VW(RETAGE-1,NGRID,2)         !  Value function for working-age agents
+REAL YR(RETAGE:MAXAGE,NGRID)           !  Age-dependent distribution of retirees across asset states
+REAL YW(RETAGE-1,NGRID,2)         !  Age-dependent distribution of working-age agents across asset and employment states
 
-ALLOCATABLE  A, ACROSS, ALONG, CCROSS, CLONG, CUMS, EFFCROSS, EFFLONG, ICROSS
-ALLOCATABLE  IDCR, IDCW, ILONG, MU, S, UT, VR, VW, YR, YW
+
 
 !*********************
 !
@@ -112,7 +109,6 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 !
 !*********************
 
-     ALLOCATE ( EFFCROSS(RETAGE-1), S(MAXAGE) )
      READ(7,*) ( EFFCROSS(AGE), AGE=1,RETAGE-1 )
      READ(8,*) ( S(AGE), AGE=1,MAXAGE )
      P = RESHAPE((/0.94, 0.94, 0.06, 0.06/),(/2,2/))
@@ -128,13 +124,10 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !   Tabulate asset levels
 
-     ALLOCATE ( A(NGRID) )
      A = (/ ( (FLOAT(IA-1)*AMAX)/FLOAT(NGRID-1), IA=1,NGRID ) /)
 
 !   Tabulate utility function
 
-     JMAX = 1.5*AMAX/CINCR
-     ALLOCATE ( UT(JMAX) )
      DO I=1,JMAX
         CONS = CMIN + (I-1)*CINCR
         UT(I) = (CONS**(1.0-GAMMA))/(1.0-GAMMA)
@@ -142,7 +135,6 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !  Unconditional survival probabilities
 
-     ALLOCATE ( CUMS(MAXAGE), MU(MAXAGE) )
 
      CUMS(1) = 1.0
      DO J=2,MAXAGE
@@ -168,49 +160,14 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
         L = L + 0.94*HBAR*EFFCROSS(AGE)*MU(AGE)
      END DO
  
-!  INSERT BLOCK C HERE TO COMPUTE A TABLE
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  Beginning of BLOCK C
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-!   Supplemental code for creating a table by varying a single parameter value
-
-!   Also requires BLOCK D
-
-!   To use 1025-point grid,
-!      (1)  comment out the relevant parameter statement above
-!      (2)  set up DO-loop in terms of the parameter value
-!      (3)  implicitly let the ending values of K and BEQ for one row of the
-!           table be the initial values for the next row
-!      (4)  write parameter value, K, and BEQ to unit 11
-!      (5)  possibly write other output to unit 12
-
-!   To use 4097-point grid,
-!      (1)  comment out the relevant parameter statement above
-!      (2)  set up DO-loop in terms of NROW index
-!      (3)  read parameter value, K, and BEQ for each row of the table
-!           from data in unit 11
-!      (4)  write output to unit 12
-
-     OPEN(UNIT=11,FILE='k_beq.out')
-     OPEN(UNIT=12,FILE='table.out')
-
+	 ! social security replacement loop
  DO ITHETA = 4,4,1                            ! 1025-point grid
      THETA = FLOAT(ITHETA)/10                     ! 1025-point grid
      PRINT *, 'THETA =', THETA                      ! 1025-point grid
 
-! DO IROW = 1,39                                    ! 4097-point grid
-!     READ(11,*) BETA, K, BEQ                      ! 4097-point grid
-!     PRINT *, 'ROW', IROW, '      BETA =', BETA   ! 4097-point grid
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  End of BLOCK C
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 
@@ -224,50 +181,10 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !   Longitudinal age-earnings profile for given cohort
 
-     ALLOCATE ( EFFLONG(RETAGE-1) )
      EFFLONG = (/ ( ((1+GROWTH)**(AGE-1))*EFFCROSS(AGE), AGE=1,RETAGE-1 ) /)
 
-     WRITE(10,*) 'PARAMETER VALUES'
-     WRITE(10,*)
 
-     WRITE(10,*) '  Convergence tolerance for capital stock:', TOLK
-     WRITE(10,*) '  Convergence tolerance for bequests:', TOLB
-     WRITE(10,*) '  Convergence gradient for capital stock:', GRADK
-     WRITE(10,*) '  Convergence gradient for bequests:', GRADB
-     WRITE(10,*) '  Maximum number of iterations for convergence:', MAXITER
-     WRITE(10,*)
 
-     WRITE(10,*) '  Labor exponent in production function:', ALPHA
-     WRITE(10,*) '  Multiplicative constant in production function:', TFP
-     WRITE(10,*) '  Growth rate of per capita output:', GROWTH
-     WRITE(10,*) '  Depreciation rate:', DEP
-     WRITE(10,*)
-
-     WRITE(10,*) '  Subjective discount factor:', BETA
-     WRITE(10,*) '  Risk aversion parameter:', GAMMA
-     WRITE(10,*)
-
-     WRITE(10,*) '  Social security replacement ratio:', THETA
-     WRITE(10,*) '  Unemployment insurance replacement rate:', PHI
-     WRITE(10,*)
-
-     WRITE(10,*) '  Maximum age allowed:', MAXAGE
-     WRITE(10,*) '  Retirement age:', RETAGE
-     WRITE(10,*) '  Exogenous hours of work:', HBAR
-     WRITE(10,*) '  Population growth rate:', RHO
-     WRITE(10,*)
-
-     WRITE(10,*) '  Maximum permissible asset:', AMAX
-     WRITE(10,*) '  Number of points on asset grid:', NGRID
-     WRITE(10,*)
-
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  Beginning of BLOCK A
-!$
-!$  Choose appropriate version from SOLVE.SUP or FIXEDPT.SUP
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 !*********************
 !
@@ -277,19 +194,10 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
      ITER = 1
 
-     WRITE(10,*) 'ITERATION RESULTS'
-     WRITE(10,*)
+
  200 ITERINC = 0
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  End of BLOCK A
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-!
-!   More Preliminary Calculations
-!
 
 !   Factor prices
 
@@ -334,18 +242,15 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !   Find decision rules for all ages and states
 
-     ALLOCATE ( IDCR(RETAGE:MAXAGE,NGRID), IDCW(RETAGE-1,NGRID,2))
-     ALLOCATE ( VR(RETAGE:MAXAGE,NGRID), VW(RETAGE-1,NGRID,2) )
+
      CALL DECRULE01                     
 
 !   Calculate expected lifetime utility
 
      EXPCTDUT = 0.94*VW(1,1,1) + 0.06*VW(1,1,2)
-     DEALLOCATE ( VR, VW )
 
 !   Find invariant distribution
 
-     ALLOCATE ( YR(RETAGE:MAXAGE,NGRID), YW(RETAGE-1,NGRID,2) )
      CALL INVAR01
 
      DO AGE=1,RETAGE-1
@@ -354,8 +259,6 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
               PRINT *, 'Error:  Maximum asset limit is binding.'
               PRINT *, 'AGE =', AGE
               PRINT *, 'IA =', IA
-              WRITE(10,*) 'AGE =', AGE
-              WRITE(10,*) 'IA =', IA
               GO TO 999
            END IF
         END DO
@@ -363,17 +266,10 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 
 !   Compute age profiles and average lifetime utility
 
-     ALLOCATE ( ACROSS(MAXAGE), CCROSS(MAXAGE), ICROSS(MAXAGE) )
-     ALLOCATE ( ALONG(MAXAGE), CLONG(MAXAGE), ILONG(MAXAGE) )
+
      CALL PROFILE01
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  Beginning of BLOCK B
-!$
-!$  Choose appropriate version from SOLVE.SUP or FIXEDPT.SUP
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 
 !   Compute average end-of-period assets and bequests
 
@@ -404,21 +300,14 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
      KDEV = ABS(K-K1)/K
      BEQDEV = ABS(BEQ-BEQ1)/BEQ
 
-     WRITE(10,*) 'Iteration', ITER
      PRINT *, 'Iteration', ITER
-     WRITE(10,*) 'Initial capital =', K
      PRINT *, 'Initial capital =', K
-     WRITE(10,*) 'Ending capital =', K1
      PRINT *, 'Ending capital =', K1
-     WRITE(10,*) 'Relative change in capital =', KDEV
      PRINT *, 'Relative change in capital =', KDEV
-     WRITE(10,*) 'Initial bequests =', BEQ
      PRINT *, 'Initial bequests =', BEQ
-     WRITE(10,*) 'Ending bequest =', BEQ1
      PRINT *, 'Ending bequests =', BEQ1
-     WRITE(10,*) 'Relative change in bequests =', BEQDEV
      PRINT *, 'Relative change in bequests =', BEQDEV
-     WRITE(10,*)
+
      IF ( (KDEV>TOLK) .OR. (BEQDEV>TOLB) ) THEN
         K = (1 - GRADK)*K + GRADK*K1
         BEQ = (1 - GRADB)*BEQ + GRADB*BEQ1
@@ -432,12 +321,9 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
         IF (ITER>MAXITER) THEN
            PRINT *, 'Maximum number of iterations exceeded.'
            PRINT *, 'Program terminates.'
-           WRITE(10,*) 'Maximum number of iterations exceeded.'
-           WRITE(10,*) 'Program terminates.'
            GO TO 799
         END IF
-        DEALLOCATE (IDCR, IDCW, YR, YW)
-        DEALLOCATE (ACROSS, ALONG, CCROSS, CLONG, ICROSS, ILONG)
+
         GO TO 200
 
      END IF
@@ -527,42 +413,13 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 88	FORMAT (1X,I2,1X,3(F10.7,X))
 	END DO
      
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  End of BLOCK B
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-!  INSERT BLOCK D HERE TO COMPUTE A TABLE
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  Beginning of BLOCK D
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-!   Supplemental code for creating a table by varying a single parameter value
-
-!   Also requires BLOCK C
-
-     K = K1                                       ! 1025-point grid
-     BEQ = BEQ1                                   ! 1025-point grid
-     WRITE(11,*) THETA, K1, BEQ1                   ! 1025-point grid
-     WRITE(12,*) THETA, OUTPUT, K1, ACONS, INT, WAGE, EXPCTDUT
-     WRITE(10,*)
-     WRITE(10,*)
-
-     DEALLOCATE ( EFFLONG )
-     DEALLOCATE ( IDCR, IDCW, YR, YW )
-     DEALLOCATE ( ACROSS, ALONG, CCROSS, CLONG, ICROSS, ILONG )
 
  END DO
 
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-!$
-!$  End of BLOCK D
-!$
-!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 
 
 !*********************
@@ -571,29 +428,11 @@ OPEN(UNIT=18,FILE='/home/sean/Desktop/Dropbox/cultural_ss/profile.txt')
 !
 !*********************
      CONTAINS
+
 !******************************************************************
 
 SUBROUTINE SRCHFIVE01
-
-!******************
-!
-!   Finds optimum asset choice over several (generally five)
-!         possibly non-contiguous grid points
-!
-!******************
-!
-!   Uses:    Parameters:   BETA, CINCR, CMIN, RETAGE
-!            Variables:    AGE, IL, ISKIP, IU, VMAX, X3
-!            Arrays:       A(:), P(:,:), S(:), UT(:), VR(:,:), VW(:,:,:)
-!
-!   Returns:   JAMAX, VMAX
-!
-!   Local:     CONS, DC, JA, JC, UTIL, VTEMP, XC
-!
-!   Calls:     None
-!
-!******************
-                                                                  
+                                          
 
 DO JA=IL,IU,ISKIP
 
@@ -626,23 +465,7 @@ END SUBROUTINE
 
 SUBROUTINE BRACKET01
 
-!******************
-!
-!   Finds global optimum asset choice for a single state
-!
-!******************
-!
-!   Uses:    Parameters:   NGRID, RETAGE
-!            Variables:    AGE, ATR, BEQ, IA, IS, WAGEZ
-!            Arrays:       None
-!
-!   Returns:   IDCR(:,:), IDCW(:,:,:), VR(:,:), VW(:,:,:)
-!
-!   Local:     IL, ISKIP, IU, JAMAX, VMAX, X3
-!
-!   Calls:     SRCHFIVE01
-!
-!******************
+
 
      X3 = ATR*( A(IA) + BEQ*(1.0+GROWTH)**(AGE-1) ) + WAGEZ
      VMAX = -1.E6
@@ -700,23 +523,7 @@ END SUBROUTINE
 
 SUBROUTINE DECRULE01
 
-!******************
-!
-!   Finds optimal asset choice for all states
-!
-!******************
-!
-!   Uses:    Parameters:   GAMMA, HBAR, MAXAGE, NGRID, PHI, RETAGE,
-!            Variables:    ATR, BEQ, SS, STAX, UTAX, WAGE
-!            Arrays:       A(:), EFFLONG(:)
-!
-!   Returns:   IDCR(:,:), IDCW(:,:,:), VR(:,:), VW(:,:,:)
-!
-!   Local:     CONS, WAGEZ
-!
-!   Calls:     BRACKET01
-!
-!******************
+
 
 !   Initialize value function and decision rules
 
@@ -775,23 +582,7 @@ SUBROUTINE DECRULE01
 
 SUBROUTINE INVAR01
 
-!******************
-!
-!   Finds invariant distribution
-!
-!******************
-!
-!   Uses:    Parameters:   MAXAGE, NGRID, RETAGE
-!            Variables:    None
-!            Arrays:       IDCR(:,:), IDCW(:,:,:), P(:,:)
-!
-!   Returns:   YR(:,:), YW(:,:,:)
-!
-!   Local:     JA
-!
-!   Calls:     None
-!
-!******************
+
 
 !   Initialize age-dependent distributions
 
@@ -853,26 +644,7 @@ SUBROUTINE INVAR01
 
 SUBROUTINE PROFILE01
 
-!******************
-!
-!   Finds age profiles for income, consumption, and assets, and
-!      computes average lifetime utility
-!
-!******************
-!
-!   Uses:    Parameters:   CINCR, CMIIN, HBAR, NGRID, PHI, RETAGE
-!            Variables:    ATR, BEQ, SS, STAX, UTAX, WAGE
-!            Arrays:       A(:), EFFLONG(:), IDCR(:,:), IDCW(:,:,:),
-!                          UT(:), YR(:,:), YW(:,:,:)
-!
-!   Returns:   ACROSS(:), ALONG(:), AVGUTIL, CCROSS(:), CLONG(:),
-!              ICROSS(:), ILONG(:)
-!
-!   Local:     CONS, DC, JA, JC, UTIL, WAGEZ, XC
-!
-!   Calls:     None
-!
-!******************
+
 
 !   Compute longitudinal profiles for a given cohort,
 !      and average lifetime utility
