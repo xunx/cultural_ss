@@ -31,7 +31,7 @@ REAL, PARAMETER :: GRADB = 0.6        !  Convergence gradient for bequests
 INTEGER, PARAMETER :: MAXITER = 50       !  Maximum number of iterations for convergence
 
 REAL, PARAMETER :: ALPHA  = 0.690     !  Labor exponent in production function
-REAL, PARAMETER :: TFP    = 0.9     !  Multiplicative constant in production function
+REAL, PARAMETER :: TFP    = 1.005     !  Multiplicative constant in production function
 REAL, PARAMETER :: GROWTH = 0.0165    !  Growth rate of per capita output
 REAL, PARAMETER :: DEP    = 0.069     !  Depreciation rate
 
@@ -392,7 +392,6 @@ END IF
      WRITE(10,*)
 
      WRITE(10,*) 'Output =', OUTPUT
-     print*, 'Output =', OUTPUT
      WRITE(10,*) 'Consumption =', ACONS
      WRITE(10,*) 'Investment =', INV
      WRITE(10,*) 'Excess demand =', EXDEM
