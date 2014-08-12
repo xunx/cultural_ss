@@ -94,10 +94,8 @@ REAL DLONG(MAXAGE)			! position of optimal Kt+1 for each age. dlong(1) is end of
 
 
 !*********************
-!
-!   Open Files
-!
-!*********************
+!0. Open Files
+
 
 MODE = 2
 
@@ -113,23 +111,15 @@ ELSE IF (MODE==2) THEN  ! This is my bootcamp Windows
 	OPEN(UNIT=18,FILE='C:\Users\Sean\Desktop\Dropbox\cultural_ss\profile.txt')
 END IF
 
-!*********************
-!
-!   Read Data
-!
-!*********************
 
-     READ(7,*) ( EFFCROSS(AGE), AGE=1,RETAGE-1 )
-     READ(8,*) ( S(AGE), AGE=1,MAXAGE )
 
-!*********************
-!
-!   Preliminary Calculations
-!
-!*********************
 
-     K = K0
-     BEQ = BEQ0
+
+!***********************
+! 1.1 tabulate spaces & misc variables
+
+	READ(7,*) ( EFFCROSS(AGE), AGE=1,RETAGE-1 )
+	READ(8,*) ( S(AGE), AGE=1,MAXAGE )
 
 !   Tabulate asset levels
 
@@ -142,6 +132,28 @@ END IF
         UT(I) = (CONS**(1.0-GAMMA))/(1.0-GAMMA)
      END DO
 
+!   Longitudinal age-earnings profile for given cohort
+
+     EFFLONG = (/ ( ((1+GROWTH)**(AGE-1))*EFFCROSS(AGE), AGE=1,RETAGE-1 ) /)
+
+!   Growth rate of aggregate output
+
+     AGROWTH = (1.0+GROWTH)*(1.0+RHO) - 1.0
+
+
+!***********************
+! 1.2 values for K, L, beq
+
+
+
+! initial guess for K, beq
+
+     K = K0
+     BEQ = BEQ0
+
+
+
+! compute pop to find L
 !  Unconditional survival probabilities
 
 
@@ -149,7 +161,6 @@ END IF
      DO J=2,MAXAGE
         CUMS(J) = CUMS(J-1)*S(J)
      END DO
-
 !  Age distribution of population
 
      CUM = 0.0
@@ -161,7 +172,6 @@ END IF
      DO AGE=2,MAXAGE
         MU(AGE) = S(AGE)*MU(AGE-1)/(1.0+RHO)
      END DO
-
 !   Labor input
 
      L = 0.0
@@ -171,32 +181,16 @@ END IF
  
 
 
-	 ! social security replacement loop
+
+
+!**************************************
+! starting parameter loop
+
+! 2.0 ss loop
  DO ITHETA = 4,4,1                            ! 1025-point grid
      THETA = FLOAT(ITHETA)/10                     ! 1025-point grid
      PRINT *, 'THETA =', THETA                      ! 1025-point grid
 
-
-
-
-
-
-!   Growth rate of aggregate output
-
-     AGROWTH = (1.0+GROWTH)*(1.0+RHO) - 1.0
-
-!   Longitudinal age-earnings profile for given cohort
-
-     EFFLONG = (/ ( ((1+GROWTH)**(AGE-1))*EFFCROSS(AGE), AGE=1,RETAGE-1 ) /)
-
-
-
-
-!*********************
-!
-!   Iterate to Convergence
-!
-!*********************
 
      ITER = 1
 
@@ -205,7 +199,7 @@ END IF
 
 
 
-!   Factor prices
+! 2.1 Factor prices
 
      WAGE = ALPHA*TFP*(L**(ALPHA-1.0))*(K**(1.0-ALPHA))
 	 PRINT*, 'WAGE=', WAGE
@@ -219,7 +213,10 @@ END IF
      END IF
 
      ATR = 1.0 + INT    
-                                                                 
+
+
+
+! 2.2 ss benefits and ss tax rate                                                                 
 !   Social security benefits for a given cohort, constant across their
 !      retirement years
 
@@ -242,11 +239,12 @@ END IF
      END DO                                       !  age-earnings profile of
      STAX = STAX/(WAGE*HBAR*CUM)             !  this period's workers
             
-!
-!   Main Calculations
-!
 
-!   Find decision rules for all ages and states
+
+
+
+
+!2.3 Find decision rules
 
 
      CALL DECRULE01                     
@@ -268,7 +266,9 @@ END IF
 ! 	   	 END DO
 !      END DO
 
-!   Compute age profiles and average lifetime utility
+
+
+!2.4 Compute age profiles and average lifetime utility
 
 
      CALL PROFILE01
@@ -281,7 +281,7 @@ END IF
 		 END IF
 	 END DO
 
-!   Compute average end-of-period assets and bequests
+!2.5 sum up assets and bequests
 
      AEND = 0.0
      BEQEND = 0.0
@@ -338,11 +338,8 @@ END IF
 
      END IF
 
-!*********************
-!
-!   Summary Calculations
-!
-!*********************
+!*********************************
+! 4. final summary to show results
 
 !   Compute average beginning-of-period assets
 
@@ -429,16 +426,12 @@ END IF
 
 
 
+!****************
+!3 subroutines
+CONTAINS
 
-!*********************
-!
-!   Internal Functions and Subroutines
-!
-!*********************
-     CONTAINS
 
-!******************************************************************
-
+! 3.3 search five
 SUBROUTINE SRCHFIVE01
                                           
 
@@ -468,7 +461,7 @@ END DO
 
 END SUBROUTINE
 
-!******************************************************************
+! 3.2 bracket
 
 SUBROUTINE BRACKET01
 
@@ -526,8 +519,8 @@ SUBROUTINE BRACKET01
 
 END SUBROUTINE
 
-!******************************************************************
 
+! 3.1 decrule
 SUBROUTINE DECRULE01
 
 
@@ -578,8 +571,7 @@ SUBROUTINE DECRULE01
 
 
 
-!******************************************************************
-
+! 3.4 profile
 SUBROUTINE PROFILE01
 
 
@@ -621,6 +613,9 @@ SUBROUTINE PROFILE01
  
      END SUBROUTINE
 
-!*****************************************
+
+
+
+
 
  999 END PROGRAM
