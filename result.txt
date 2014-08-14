@@ -1,22 +1,21 @@
  FINAL RESULTS
  
- Labor input =  0.8033771    
+ Labor input =   1.232914    
  
- Wage rate =  0.8413612    
- Interest rate =  7.2919033E-02
+ Wage rate =   1.168600    
+ Interest rate =  7.2908022E-02
  
- Social security benefit =  0.5017092    
- Social security tax rate =  5.3860459E-02
+ Social security benefit =   5.188576    
+ Social security tax rate =  4.2219646E-02
  
- Output =  0.9796091    
- Consumption =  0.7705398    
- Investment =  0.2090544    
- Excess demand = -1.4901161E-05
+ Output =   3.073672    
+ Consumption =   1.472687    
+ Investment =   1.599529    
+ Excess demand = -1.4562607E-03
  
- Capital (from ending assets) =   2.139788    
+ Capital (from ending assets) =   8.393481    
  
- Capital-Output Ratio   2.184328    
+ Capital-Output Ratio   2.730767    
  
- Bequests (received) =  3.5480842E-02
  
- Expected lifetime utility (value function) =  -33.99868    
+ Expected lifetime utility (value function) =  -19.35977    
